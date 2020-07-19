@@ -24,7 +24,7 @@ func (feed *XMLRoot) ToXML(xmlPrefix string) ([]byte, error) {
 		xmlPrefix = XMLFilePrefix
 	}
 
-	buf, err := xml.Marshal(feed)
+	buf, err := xml.MarshalIndent(feed, "  ", "    ")
 	if err != nil {
 		return nil, err
 	}
