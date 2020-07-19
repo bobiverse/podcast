@@ -18,12 +18,13 @@ type Channel struct {
 	Author         string `xml:"author,omitempty" yaml:"Author"`
 	Description    *CDATA `xml:"description,omitempty" yaml:"Description"`
 	ContentEncoded *CDATA `xml:"content:encoded,omitempty" yaml:"ContentEncoded"`
-	Owner          *Owner `xml:"owner,omitempty" yaml:"Owner"`
 	Image          *Image `xml:"image,omitempty" yaml:"Image"`
 
+	// Docs about itunes https://help.apple.com/itc/podcasts_connect/#/itcb54353390
 	ItunesTitle    string    `xml:"itunes:title,omitempty" yaml:"ItunesTitle"`
 	ItunesSubtitle string    `xml:"itunes:subtitle,omitempty" yaml:"ItunesSubtitle"`
 	ItunesAuthor   string    `xml:"itunes:author,omitempty" yaml:"ItunesAuthor"`
+	ItunesOwner    *Owner    `xml:"itunes:owner,omitempty" yaml:"Owner"`
 	ItunesSummary  string    `xml:"itunes:summary,omitempty" yaml:"ItunesSummary"`
 	ItunesType     string    `xml:"itunes:type,omitempty" yaml:"Type"`
 	ItunesExplicit string    `xml:"itunes:explicit,omitempty" yaml:"Explicit"`
@@ -55,8 +56,13 @@ func (channel *Channel) Fix() {
 		channel.ContentEncoded = channel.Description
 	}
 
-	if channel.Copyright == "" && channel.Owner != nil {
-		channel.Copyright = fmt.Sprintf("℗ & © %s", channel.Owner.Name)
+	if channel.Copyright == "" && channel.ItunesOwner != nil {
+		channel.Copyright = fmt.Sprintf("℗ & © %s", channel.ItunesOwner.Name)
+	}
+
+	if channel.Image != nil && channel.Image.URL != "" {
+		channel.Image.Title = channel.Title
+		channel.Image.Link = channel.Link
 	}
 
 	// Copy generic fields to itunes
@@ -76,7 +82,7 @@ func (channel *Channel) Fix() {
 		channel.ItunesType = TypeEpisodic
 	}
 	if channel.ItunesExplicit == "" {
-		channel.ItunesExplicit = ExplicitNo
+		channel.ItunesExplicit = ExplicitFalse
 	}
 
 }
@@ -115,6 +121,10 @@ func (channel *Channel) Validate() error {
 		return fmt.Errorf("Empty Channel Description")
 	}
 
+	if channel.Image.IsEmpty() {
+		return fmt.Errorf("Empty Channel Image URL")
+	}
+
 	linkURL, err := url.Parse(channel.Link)
 	if err != nil {
 		return fmt.Errorf("Error Channel Link (URL): %s", err)
@@ -132,6 +142,14 @@ func (channel *Channel) Validate() error {
 
 	if channel.ItunesCategory.IsEmpty() {
 		return fmt.Errorf("Empty Category. See: https://help.apple.com/itc/podcasts_connect/#/itc9267a2f12")
+	}
+
+	if channel.ItunesOwner.IsEmpty() {
+		return fmt.Errorf("Empty Owner. Add in format `My Name, my@email.xx`")
+	}
+	if !strings.Contains(channel.ItunesOwner.Email, "@") {
+		return fmt.Errorf("Invalid Owner email field. Add Owner data in format `My Name, my@email.xx`")
+
 	}
 
 	return nil

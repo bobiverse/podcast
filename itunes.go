@@ -5,8 +5,8 @@ const (
 	TypeEpisodic = "episodic"
 	TypeSerial   = "serial"
 
-	ExplicitNo    = "no"
-	ExplicitYes   = "yes"
+	// ExplicitNo    = "no"
+	// ExplicitYes   = "yes"
 	ExplicitFalse = "false"
 	ExplicitTrue  = "true"
 )
@@ -22,8 +22,8 @@ func TypeValues() []string {
 // ExplicitValues ..
 func ExplicitValues() []string {
 	return []string{
-		ExplicitNo,
-		ExplicitYes,
+		// ExplicitNo,
+		// ExplicitYes,
 		ExplicitFalse,
 		ExplicitTrue,
 	}
