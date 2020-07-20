@@ -4,19 +4,16 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
 
 	"github.com/fatih/color"
 	"gopkg.in/yaml.v2"
 )
 
-// PodcastYAMLFilename ..
-const PodcastYAMLFilename = "podcast.yml"
-
 // Podcast ..
 type Podcast struct {
-	ContentPath string `yaml:"-"`
-	OutputPath  string `yaml:"-"`
+	configFilepath string `yaml:"-"`
+	contentPath    string `yaml:"-"`
+	contentURL     string `yaml:"-"`
 
 	Title string `yaml:"Title"`
 
@@ -24,10 +21,14 @@ type Podcast struct {
 }
 
 // New ..
-func New(contentPath string) (*Podcast, error) {
+func New(configPath, contentPath, contentURL string) (*Podcast, error) {
 	log.Println("[podcast] New ")
 
 	podcast := &Podcast{
+		configFilepath: configPath,
+		contentPath:    contentPath,
+		contentURL:     contentURL,
+
 		Feed: &XMLRoot{
 			Itunes:  "http://www.itunes.com/dtds/podcast-1.0.dtd",
 			Content: "http://purl.org/rss/1.0/modules/content/",
@@ -38,32 +39,23 @@ func New(contentPath string) (*Podcast, error) {
 	}
 
 	// load content from given directory
-	if contentPath != "" {
-		if err := podcast.LoadFromPath(contentPath); err != nil {
-			return podcast, err
-		}
+	if err := podcast.Load(); err != nil {
+		return podcast, err
 	}
 
 	return podcast, nil
 }
 
 // LoadFromPath ..
-func (podcast *Podcast) LoadFromPath(contentPath string) error {
-
-	// check if folder exists
-	if _, err := os.Stat(contentPath); os.IsNotExist(err) {
-		return err
-	}
-	podcast.ContentPath = contentPath
+func (podcast *Podcast) Load() error {
 
 	// check if podcast YAML file exists
-	fpath := filepath.Join(contentPath, PodcastYAMLFilename)
-	if _, err := os.Stat(fpath); os.IsNotExist(err) {
+	if _, err := os.Stat(podcast.configFilepath); os.IsNotExist(err) {
 		return err
 	}
 
 	// Read YAML contents
-	buf, err := ioutil.ReadFile(fpath)
+	buf, err := ioutil.ReadFile(podcast.configFilepath)
 	if err != nil {
 		return err
 	}

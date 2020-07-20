@@ -89,6 +89,9 @@ func (channel *Channel) Fix() {
 		channel.ItunesImage = &AttrHref{channel.Image.URL}
 	}
 
+	// Fix items
+	channel.Items.Fix()
+
 }
 
 // Validate channel
@@ -156,5 +159,9 @@ func (channel *Channel) Validate() error {
 
 	}
 
-	return nil
+	if channel.Items.Len() == 0 {
+		return fmt.Errorf("No episodes found. Add `Items:` into podcast yaml file")
+	}
+
+	return channel.Items.Validate()
 }
