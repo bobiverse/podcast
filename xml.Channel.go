@@ -30,6 +30,7 @@ type Channel struct {
 	ItunesExplicit string    `xml:"itunes:explicit,omitempty" yaml:"Explicit"`
 	ItunesKeywords string    `xml:"itunes:keywords,omitempty" yaml:"Keywords"`
 	ItunesCategory *Category `xml:"itunes:category" yaml:"Category"`
+	ItunesImage    *AttrHref `xml:"itunes:image" yaml:"ItunesImage"`
 
 	LastBuildDate *Date  `xml:"lastBuildDate,omitempty" yaml:"LastBuildDate"`
 	Copyright     string `xml:"copyright,omitempty" yaml:"Copyright"`
@@ -83,6 +84,9 @@ func (channel *Channel) Fix() {
 	}
 	if channel.ItunesExplicit == "" {
 		channel.ItunesExplicit = ExplicitFalse
+	}
+	if channel.ItunesImage.IsEmpty() && !channel.Image.IsEmpty() {
+		channel.ItunesImage = &AttrHref{channel.Image.URL}
 	}
 
 }
