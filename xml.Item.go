@@ -15,18 +15,21 @@ type Item struct {
 	// Text        string     `xml:",chardata"`
 	Title       string     `xml:"title,omitempty" yaml:"Title"`
 	Description string     `xml:"description,omitempty" yaml:"Description"`
-	Encoded     string     `xml:"encoded,omitempty" yaml:"Encoded"`
+	Encoded     *CDATA     `xml:"content:encoded,omitempty" yaml:"Encoded"`
 	Author      string     `xml:"author,omitempty" yaml:"Author"`
-	Summary     string     `xml:"summary,omitempty" yaml:"Summary"`
+	Summary     *CDATA     `xml:"summary,omitempty" yaml:"Summary"`
 	Enclosure   *Enclosure `xml:"enclosure,omitempty" yaml:"Enclosure"`
 	GUID        *GUID      `xml:"guid,omitempty" yaml:"GUID"`
-	PubDate     string     `xml:"pubDate,omitempty" yaml:"PubDate"`
-	Duration    string     `xml:"duration,omitempty" yaml:"Duration"`
-	Keywords    string     `xml:"keywords,omitempty" yaml:"Keywords"`
-	Season      int        `xml:"season,omitempty" yaml:"Season"`
-	Episode     int        `xml:"episode,omitempty" yaml:"Episode"`
-	EpisodeType string     `xml:"episodeType,omitempty" yaml:"EpisodeType"`
-	Explicit    string     `xml:"explicit,omitempty" yaml:"Explicit"`
+	PubDate     *Date      `xml:"pubDate,omitempty" yaml:"PubDate"`
+	Duration    string     `xml:"itunes:duration,omitempty" yaml:"Duration"`
+	Keywords    string     `xml:"itunes:keywords,omitempty" yaml:"Keywords"`
+	Season      int        `xml:"itunes:season,omitempty" yaml:"Season"`
+	Episode     int        `xml:"itunes:episode,omitempty" yaml:"Episode"`
+	EpisodeType string     `xml:"itunes:episodeType,omitempty" yaml:"EpisodeType"`
+	Explicit    string     `xml:"itunes:explicit,omitempty" yaml:"Explicit"`
+
+	ItunesTitle   string `xml:"itunes:title,omitempty" yaml:"ItunesTitle"`
+	ItunesSummary *CDATA `xml:"itunes:summary,omitempty" yaml:"ItunesSummary"`
 }
 
 // Weight of the item for sorting
@@ -66,6 +69,14 @@ func (item *Item) ExtractKeyInfo() {
 // Fix ..
 func (item *Item) Fix() {
 	log.Printf("Item[%s] Fix()...", item.Key)
+
+	if item.ItunesTitle == "" {
+		item.ItunesTitle = item.Title
+	}
+
+	if item.ItunesSummary.IsEmpty() {
+		item.ItunesSummary = item.Summary
+	}
 }
 
 // Validate channel
@@ -79,7 +90,11 @@ func (item *Item) Validate() error {
 		return fmt.Errorf("Item[%s] %s", item.Key, err)
 	}
 
-	if item.Summary == "" {
+	if item.PubDate.IsZero() {
+		return fmt.Errorf("Item[%s] PubDate must be assigned", item.Key)
+	}
+
+	if item.Summary.IsEmpty() {
 		return fmt.Errorf("Item[%s] Summary must be added", item.Key)
 	}
 

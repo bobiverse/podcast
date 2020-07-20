@@ -13,7 +13,7 @@ type Channel struct {
 	Link           string `xml:"link,omitempty" yaml:"Link"`
 	Title          string `xml:"title" yaml:"Title"`
 	Subtitle       string `xml:"subtitle,omitempty" yaml:"Subtitle"`
-	Summary        string `xml:"summary,omitempty" yaml:"Summary"`
+	Summary        *CDATA `xml:"summary,omitempty" yaml:"Summary"`
 	Language       string `xml:"language,omitempty" yaml:"Language"`
 	Author         string `xml:"author,omitempty" yaml:"Author"`
 	Description    *CDATA `xml:"description,omitempty" yaml:"Description"`
@@ -25,7 +25,7 @@ type Channel struct {
 	ItunesSubtitle string    `xml:"itunes:subtitle,omitempty" yaml:"ItunesSubtitle"`
 	ItunesAuthor   string    `xml:"itunes:author,omitempty" yaml:"ItunesAuthor"`
 	ItunesOwner    *Owner    `xml:"itunes:owner,omitempty" yaml:"Owner"`
-	ItunesSummary  string    `xml:"itunes:summary,omitempty" yaml:"ItunesSummary"`
+	ItunesSummary  *CDATA    `xml:"itunes:summary,omitempty" yaml:"ItunesSummary"`
 	ItunesType     string    `xml:"itunes:type,omitempty" yaml:"Type"`
 	ItunesExplicit string    `xml:"itunes:explicit,omitempty" yaml:"Explicit"`
 	ItunesKeywords string    `xml:"itunes:keywords,omitempty" yaml:"Keywords"`
@@ -76,7 +76,7 @@ func (channel *Channel) Fix() {
 	if channel.ItunesAuthor == "" {
 		channel.ItunesAuthor = channel.Author
 	}
-	if channel.ItunesSummary == "" {
+	if channel.ItunesSummary.IsEmpty() {
 		channel.ItunesSummary = channel.Summary
 	}
 	if channel.ItunesType == "" {
@@ -120,7 +120,7 @@ func (channel *Channel) Validate() error {
 		return fmt.Errorf("Empty Channel Link")
 	}
 
-	if channel.Summary == "" {
+	if channel.Summary.IsEmpty() {
 		return fmt.Errorf("Empty Channel Summary")
 	}
 
