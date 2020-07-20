@@ -20,7 +20,7 @@ func (items ItemList) Swap(i, j int) {
 
 // Less is part of sort.Interface. It is implemented by calling the "by" closure in the sorter.
 func (items ItemList) Less(i, j int) bool {
-	return items[i].Weight() < items[j].Weight()
+	return items[i].Weight() > items[j].Weight()
 }
 
 // UnmarshalYAML ..
@@ -38,7 +38,7 @@ func (items *ItemList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		*items = append(*items, item)
 	}
 
-	sort.Sort(items)
+	sort.Reverse(items)
 
 	return nil
 }
