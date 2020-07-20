@@ -77,6 +77,14 @@ func (item *Item) Fix() {
 	if item.ItunesSummary.IsEmpty() {
 		item.ItunesSummary = item.Summary
 	}
+
+	if item.GUID.IsEmpty() {
+		if item.Enclosure != nil {
+			item.GUID = NewGUID(item.Enclosure.URL)
+		} else {
+			item.GUID = NewGUID(item.File)
+		}
+	}
 }
 
 // Validate channel

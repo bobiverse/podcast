@@ -1,6 +1,7 @@
 package podcast
 
 import (
+	"fmt"
 	"log"
 	"sort"
 )
@@ -56,10 +57,27 @@ func (items ItemList) Fix() {
 func (items ItemList) Validate() error {
 	log.Printf("ItemList Validate()...")
 
+	// collect all guids and check if there is no duplicates
+	var guids []string
+
+	// Weight is season and episode weight (must be unique)
+	var weights []int
+
 	for _, item := range items {
 		if err := item.Validate(); err != nil {
 			return err
 		}
+
+		if inSlice(item.GUID.Text, guids) {
+			return fmt.Errorf("GUID must be unique amongst all items. Found duplicate: `%s` (%s)", item.GUID.Text, item.Key)
+		}
+		if inSliceInt(item.Weight(), weights) {
+			return fmt.Errorf("Weight (season, episode) must be unique amongst all items. Found duplicate: `%s` (%s)", item.Key, item.Title)
+		}
+
+		guids = append(guids, item.GUID.Text)
+		weights = append(weights, item.Weight())
+
 	}
 
 	return nil
