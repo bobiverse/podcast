@@ -17,7 +17,7 @@ type Item struct {
 
 	// Text        string     `xml:",chardata"`
 	Title       string     `xml:"title,omitempty" yaml:"Title"`
-	Description string     `xml:"description,omitempty" yaml:"Description"`
+	Description *CDATA     `xml:"description,omitempty" yaml:"Description"`
 	Encoded     *CDATA     `xml:"content:encoded,omitempty" yaml:"Encoded"`
 	Author      string     `xml:"author,omitempty" yaml:"Author"`
 	Summary     *CDATA     `xml:"summary,omitempty" yaml:"Summary"`
@@ -152,6 +152,10 @@ func (item *Item) Validate() error {
 
 	if item.PubDate.IsZero() {
 		return fmt.Errorf("Item[%s] PubDate required", item.Key)
+	}
+
+	if item.Description.IsEmpty() {
+		return fmt.Errorf("Item[%s] Description required", item.Key)
 	}
 
 	if item.Summary.IsEmpty() {
