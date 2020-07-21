@@ -9,8 +9,10 @@ import (
 
 // Item ..
 type Item struct {
-	Key  string `xml:"-" yaml:"-"`
-	File string `xml:"-" yaml:"File"`
+	Key      string `xml:"-" yaml:"-"`
+	File     string `xml:"-" yaml:"File"`
+	FileSize int64 `xml:"-" yaml:"FileSize"`
+	FileType string `xml:"-" yaml:"FileType"`
 
 	// Text        string     `xml:",chardata"`
 	Title       string     `xml:"title,omitempty" yaml:"Title"`
@@ -35,7 +37,9 @@ type Item struct {
 // Weight of the item for sorting
 // Seasons and episode taken
 func (item *Item) Weight() int {
-	return item.Season*1000 + item.Episode
+	weight := item.Season*1000 + item.Episode
+	log.Printf("WEIGHT: %d", weight)
+	return weight
 }
 
 // Extraxt info from key
@@ -85,6 +89,13 @@ func (item *Item) Fix() {
 			item.GUID = NewGUID(item.File)
 		}
 	}
+
+	// Extract information about file
+	if f, err := os.Stat(item.File); !os.IsNotExist(err) {
+		// file size
+		item.FileSize = f.Size()
+	}
+
 }
 
 // Validate channel
