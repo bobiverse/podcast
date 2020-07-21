@@ -9,6 +9,8 @@ import (
 
 // Channel ..
 type Channel struct {
+	Domain string `xml:"-" yaml:"Domain"`
+
 	// Text          string    `xml:",chardata" yaml:"-"`
 	Link           string `xml:"link,omitempty" yaml:"Link"`
 	Title          string `xml:"title" yaml:"Title"`
@@ -40,6 +42,20 @@ type Channel struct {
 
 // Fix channel
 func (channel *Channel) Fix() {
+
+	if channel.Domain == "" && channel.Link != "" {
+		u, err := url.Parse(channel.Link)
+		if err == nil {
+			channel.Domain = u.Scheme + "://" + u.Hostname()
+		}
+	}
+
+	if channel.Link == "" && channel.Domain != "" {
+		u, err := url.Parse(channel.Link)
+		if err == nil {
+			channel.Domain = u.Scheme + "://" + u.Hostname()
+		}
+	}
 
 	// auto add last build time
 	if channel.LastBuildDate == nil || channel.LastBuildDate.IsZero() {
@@ -90,12 +106,16 @@ func (channel *Channel) Fix() {
 	}
 
 	// Fix items
-	channel.Items.Fix()
+	channel.Items.Fix(channel)
 
 }
 
 // Validate channel
 func (channel *Channel) Validate() error {
+	if !isValidURL(channel.Domain) {
+		return fmt.Errorf("Invalid Domain. Please enter valid `Domain` or `Link` attribute")
+	}
+
 	if channel.Title == "" {
 		return fmt.Errorf("Empty Channel Title")
 	}
@@ -116,7 +136,7 @@ func (channel *Channel) Validate() error {
 		return fmt.Errorf("Language must be in `ISO 639` format")
 	}
 
-	if channel.Link == "" {
+	if !isValidURL(channel.Link) {
 		return fmt.Errorf("Empty Channel Link")
 	}
 

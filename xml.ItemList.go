@@ -45,10 +45,11 @@ func (items *ItemList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 // Fix ..
-func (items ItemList) Fix() {
+func (items ItemList) Fix(channel *Channel) {
 	log.Printf("ItemList Fix()...")
 
 	for _, item := range items {
+		item.Channel = channel
 		item.Fix()
 	}
 }

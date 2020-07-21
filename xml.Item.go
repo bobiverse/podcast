@@ -4,15 +4,16 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
+
+	"github.com/gabriel-vasile/mimetype"
 )
 
 // Item ..
 type Item struct {
-	Key      string `xml:"-" yaml:"-"`
-	File     string `xml:"-" yaml:"File"`
-	FileSize int64 `xml:"-" yaml:"FileSize"`
-	FileType string `xml:"-" yaml:"FileType"`
+	Channel *Channel `xml:"-" yaml:"-"`
+	Key     string   `xml:"-" yaml:"-"`
 
 	// Text        string     `xml:",chardata"`
 	Title       string     `xml:"title,omitempty" yaml:"Title"`
@@ -32,17 +33,22 @@ type Item struct {
 
 	ItunesTitle   string `xml:"itunes:title,omitempty" yaml:"ItunesTitle"`
 	ItunesSummary *CDATA `xml:"itunes:summary,omitempty" yaml:"ItunesSummary"`
+
+	File         string `xml:"-" yaml:"File"`
+	FileSize     int64  `xml:"-" yaml:"FileSize"`
+	FileMimeType string `xml:"-" yaml:"FileMimeType"`
+	FileURL      string `xml:"-" yaml:"FileURL"`
 }
 
 // Weight of the item for sorting
 // Seasons and episode taken
 func (item *Item) Weight() int {
 	weight := item.Season*1000 + item.Episode
-	log.Printf("WEIGHT: %d", weight)
+	// log.Printf("WEIGHT: %d", weight)
 	return weight
 }
 
-// Extraxt info from key
+// ExtractKeyInfo info from key
 // S01E02 ..
 func (item *Item) ExtractKeyInfo() {
 	if len(item.Key) != 6 {
@@ -82,6 +88,10 @@ func (item *Item) Fix() {
 		item.ItunesSummary = item.Summary
 	}
 
+	if item.File != "" {
+		item.File = filepath.Clean(item.File)
+	}
+
 	if item.GUID.IsEmpty() {
 		if item.Enclosure != nil {
 			item.GUID = NewGUID(item.Enclosure.URL)
@@ -94,6 +104,29 @@ func (item *Item) Fix() {
 	if f, err := os.Stat(item.File); !os.IsNotExist(err) {
 		// file size
 		item.FileSize = f.Size()
+		mime, err := mimetype.DetectFile(item.File)
+		if err != nil {
+			log.Printf("Warning: Couldn't get mime type of file `%s`. %s", item.File, err)
+		} else {
+			// fmt.Println(mime.String(), mime.Extension(), err)
+			item.FileMimeType = mime.String()
+		}
+	}
+
+	if item.FileURL == "" {
+		item.FileURL = item.Channel.Domain + "/" + item.File
+
+	}
+
+	if item.Explicit == "" {
+		item.Explicit = ExplicitFalse
+	}
+
+	// This must be added as last
+	item.Enclosure = &Enclosure{
+		URL:    item.FileURL,
+		Length: item.FileSize,
+		Type:   item.FileMimeType,
 	}
 
 }
@@ -109,12 +142,20 @@ func (item *Item) Validate() error {
 		return fmt.Errorf("Item[%s] %s", item.Key, err)
 	}
 
+	if item.FileSize == 0 {
+		return fmt.Errorf("Item[%s] FileSize required", item.Key)
+	}
+
+	if item.FileMimeType == "" {
+		return fmt.Errorf("Item[%s] FileMimeType required", item.Key)
+	}
+
 	if item.PubDate.IsZero() {
-		return fmt.Errorf("Item[%s] PubDate must be assigned", item.Key)
+		return fmt.Errorf("Item[%s] PubDate required", item.Key)
 	}
 
 	if item.Summary.IsEmpty() {
-		return fmt.Errorf("Item[%s] Summary must be added", item.Key)
+		return fmt.Errorf("Item[%s] Summary required", item.Key)
 	}
 
 	if item.Season > 0 && item.Episode == 0 {
@@ -123,6 +164,18 @@ func (item *Item) Validate() error {
 
 	if item.Episode > 0 && item.Season == 0 {
 		return fmt.Errorf("Item[%s] must have Season if Episode assigned", item.Key)
+	}
+
+	if !inSlice(item.Explicit, ExplicitValues()) {
+		return fmt.Errorf("Item[%s] Explicit must be one of the %v", item.Key, ExplicitValues())
+	}
+
+	if item.Enclosure.IsEmpty() {
+		return fmt.Errorf("Item[%s] Enclosure must be valid. Please input valid all of these: `File`, `FileSize`, `FileType`", item.Key)
+	}
+
+	if !isValidURL(item.Enclosure.URL) {
+		return fmt.Errorf("Item[%s] Enclosure URL `%s` not valid. Please enter valid `FileURL`", item.Enclosure.URL, item.Key)
 	}
 
 	return nil
