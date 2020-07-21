@@ -98,14 +98,6 @@ func (item *Item) Fix() {
 		item.ItunesAuthor = item.Channel.ItunesAuthor
 	}
 
-	if item.GUID.IsEmpty() {
-		if item.Enclosure != nil {
-			item.GUID = NewGUID(item.Enclosure.URL)
-		} else {
-			item.GUID = NewGUID(item.File)
-		}
-	}
-
 	// Extract information about file
 	if f, err := os.Stat(item.File); !os.IsNotExist(err) {
 		// file size
@@ -128,11 +120,18 @@ func (item *Item) Fix() {
 		item.Explicit = ExplicitFalse
 	}
 
-	// This must be added as last
 	item.Enclosure = &Enclosure{
 		URL:    item.FileURL,
 		Length: item.FileSize,
 		Type:   item.FileMimeType,
+	}
+
+	if item.GUID.IsEmpty() {
+		if item.Enclosure != nil {
+			item.GUID = NewGUID(item.Enclosure.URL)
+		} else {
+			item.GUID = NewGUID(item.File)
+		}
 	}
 
 }

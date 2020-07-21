@@ -8,15 +8,8 @@ import (
 )
 
 // Duration for feed better represent
+// From apple: Different duration formats are accepted however it is recommended to convert the length of the episode into seconds.
 type Duration int
-
-//
-// func (dur Duration) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-// 	t := dur.Time
-// 	// v := t.Format("2006-01-02")
-// 	v := t.Format(time.RFC1123)
-// 	return e.EncodeElement(v, start)
-// }
 
 // UnmarshalYAML ..
 func (dur *Duration) UnmarshalYAML(unmarshal func(interface{}) error) error {
