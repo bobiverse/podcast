@@ -19,12 +19,10 @@ type Item struct {
 	Title       string     `xml:"title,omitempty" yaml:"Title"`
 	Description *CDATA     `xml:"description,omitempty" yaml:"Description"`
 	Encoded     *CDATA     `xml:"content:encoded,omitempty" yaml:"Encoded"`
-	Author      string     `xml:"author,omitempty" yaml:"Author"`
 	Summary     *CDATA     `xml:"summary,omitempty" yaml:"Summary"`
 	Enclosure   *Enclosure `xml:"enclosure,omitempty" yaml:"Enclosure"`
 	GUID        *GUID      `xml:"guid,omitempty" yaml:"GUID"`
 	PubDate     *Date      `xml:"pubDate,omitempty" yaml:"PubDate"`
-	Duration    string     `xml:"itunes:duration,omitempty" yaml:"Duration"`
 	Keywords    string     `xml:"itunes:keywords,omitempty" yaml:"Keywords"`
 	Season      int        `xml:"itunes:season,omitempty" yaml:"Season"`
 	Episode     int        `xml:"itunes:episode,omitempty" yaml:"Episode"`
@@ -33,6 +31,10 @@ type Item struct {
 
 	ItunesTitle   string `xml:"itunes:title,omitempty" yaml:"ItunesTitle"`
 	ItunesSummary *CDATA `xml:"itunes:summary,omitempty" yaml:"ItunesSummary"`
+	ItunesAuthor  string `xml:"itunes:author,omitempty" yaml:"Author"`
+
+	// Different duration formats are accepted however it is recommended to convert the length of the episode into seconds.
+	Duration Duration `xml:"itunes:duration,omitempty" yaml:"Duration"`
 
 	File         string `xml:"-" yaml:"File"`
 	FileSize     int64  `xml:"-" yaml:"FileSize"`
@@ -90,6 +92,10 @@ func (item *Item) Fix() {
 
 	if item.File != "" {
 		item.File = filepath.Clean(item.File)
+	}
+
+	if item.ItunesAuthor == "" {
+		item.ItunesAuthor = item.Channel.ItunesAuthor
 	}
 
 	if item.GUID.IsEmpty() {
@@ -180,6 +186,10 @@ func (item *Item) Validate() error {
 
 	if !isValidURL(item.Enclosure.URL) {
 		return fmt.Errorf("Item[%s] Enclosure URL `%s` not valid. Please enter valid `FileURL`", item.Enclosure.URL, item.Key)
+	}
+
+	if item.Duration == 0 {
+		return fmt.Errorf("Item[%s] Episode `Duration` required", item.Key)
 	}
 
 	return nil
