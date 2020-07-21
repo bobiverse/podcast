@@ -1,7 +1,11 @@
 package podcast
 
 import (
+	"bytes"
+	"log"
 	"net/url"
+	"os/exec"
+	"strings"
 )
 
 func inSlice(a string, list []string) bool {
@@ -36,4 +40,16 @@ func isValidURL(URL string) bool {
 	}
 
 	return true
+}
+
+// Execute bash script
+func runBash(name string, args ...string) ([]byte, []byte, error) {
+	log.Printf("⍄  %s %s", name, strings.Join(args, " "))
+
+	cmd := exec.Command(name, args...)
+	bufErrOutput := &bytes.Buffer{}
+	cmd.Stderr = bufErrOutput
+
+	output, err := cmd.Output()
+	return output, bufErrOutput.Bytes(), err
 }

@@ -1,7 +1,6 @@
 package podcast
 
 import (
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -15,8 +14,16 @@ type Duration int
 func (dur *Duration) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var s string
 	unmarshal(&s)
-	log.Printf(">> %s", s)
 
+	if err := dur.Set(s); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Set duration from string
+func (dur *Duration) Set(s string) error {
 	// Try to convert to integer if no errors then ok
 	totalSeconds, err := strconv.Atoi(s)
 	if err == nil {
@@ -31,7 +38,6 @@ func (dur *Duration) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	if strings.Count(s, ":") == 1 && len(s) == 5 {
 		s = "00:" + s
 	}
-	log.Printf(">> %s", s)
 
 	// correct to go format for duration parsing
 	s = strings.Replace(s, ":", "h", 1) // 00:52:11 ==> 00h52:11
@@ -43,6 +49,5 @@ func (dur *Duration) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	*dur = Duration(d.Seconds())
-
 	return nil
 }

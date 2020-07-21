@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 
 	"github.com/gabriel-vasile/mimetype"
@@ -109,6 +110,7 @@ func (item *Item) Fix() {
 			// fmt.Println(mime.String(), mime.Extension(), err)
 			item.FileMimeType = mime.String()
 		}
+
 	}
 
 	if item.FileURL == "" {
@@ -118,6 +120,42 @@ func (item *Item) Fix() {
 
 	if item.Explicit == "" {
 		item.Explicit = ExplicitFalse
+	}
+
+	// Try detect duration automatically
+	if item.Duration == 0 {
+		var buf []byte
+		var re *regexp.Regexp
+		var matches [][]byte
+
+		// ffprobe
+		_, buf, _ = runBash("ffprobe", item.File)
+		re = regexp.MustCompile("Duration: ([0-9:]+)")
+		matches = re.FindSubmatch(buf)
+		if len(matches) >= 2 {
+			item.Duration.Set(string(matches[1]))
+		}
+
+		// fmpeg
+		if item.Duration == 0 {
+			_, buf, _ = runBash("ffmpeg", "-i", item.File, "2>&1")
+			re = regexp.MustCompile("Duration: ([0-9:]+)")
+			matches = re.FindSubmatch(buf)
+			if len(matches) >= 2 {
+				item.Duration.Set(string(matches[1]))
+			}
+		}
+
+		// exiftool
+		if item.Duration == 0 {
+			buf, _, _ = runBash("exiftool", item.File)
+			re = regexp.MustCompile("Duration.+?: ([0-9:]+)")
+			matches = re.FindSubmatch(buf)
+			if len(matches) >= 2 {
+				item.Duration.Set(string(matches[1]))
+			}
+		}
+
 	}
 
 	item.Enclosure = &Enclosure{
@@ -188,7 +226,7 @@ func (item *Item) Validate() error {
 	}
 
 	if item.Duration == 0 {
-		return fmt.Errorf("Item[%s] Episode `Duration` required", item.Key)
+		return fmt.Errorf("Item[%s] Episode `Duration` required. Add it manualy or install `ffprobe`, `fmpeg` or `exiftool` to get duration automatically", item.Key)
 	}
 
 	return nil
