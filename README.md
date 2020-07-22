@@ -131,7 +131,7 @@ generates XML
               <guid isPermaLink="true">https://exampple.xx/episodes/S01E03.mp3</guid>
               <pubDate>Tue, 14 Jul 2020 00:00:00 UTC</pubDate>
               <itunes:season>1</itunes:season>
-              <itunes:episode>3</itunes:episode>
+              <itunes:episode>2</itunes:episode>
               <itunes:episodeType>full</itunes:episodeType>
               <itunes:explicit>false</itunes:explicit>
               <itunes:author>Neo and Trinity</itunes:author>
@@ -147,7 +147,7 @@ generates XML
               <guid isPermaLink="true">https://exampple.xx/episodes/S01E02.mp3</guid>
               <pubDate>Tue, 07 Jul 2020 00:00:00 UTC</pubDate>
               <itunes:season>1</itunes:season>
-              <itunes:episode>2</itunes:episode>
+              <itunes:episode>1</itunes:episode>
               <itunes:episodeType>full</itunes:episodeType>
               <itunes:explicit>false</itunes:explicit>
               <itunes:author>Neo and Trinity</itunes:author>
