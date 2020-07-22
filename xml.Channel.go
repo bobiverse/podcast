@@ -96,7 +96,7 @@ func (channel *Channel) Fix() {
 		channel.ItunesSummary = channel.Summary
 	}
 	if channel.ItunesType == "" {
-		channel.ItunesType = TypeEpisodic
+		channel.ItunesType = PodcastTypeEpisodic
 	}
 	if channel.ItunesExplicit == "" {
 		channel.ItunesExplicit = ExplicitFalse
@@ -159,8 +159,8 @@ func (channel *Channel) Validate() error {
 		return fmt.Errorf("Invalid Channel Link (URL) `%s`", linkURL)
 	}
 
-	if !inSlice(channel.ItunesType, TypeValues()) {
-		return fmt.Errorf("Itunes Type must be one of the %v", TypeValues())
+	if !inSlice(channel.ItunesType, PodcastTypeValues()) {
+		return fmt.Errorf("Itunes Type must be one of the %v", PodcastTypeValues())
 	}
 
 	if !inSlice(channel.ItunesExplicit, ExplicitValues()) {

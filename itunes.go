@@ -2,8 +2,12 @@ package podcast
 
 // Itunes constants
 const (
-	TypeEpisodic = "episodic"
-	TypeSerial   = "serial"
+	PodcastTypeEpisodic = "episodic"
+	PodcastTypeSerial   = "serial"
+
+	EpisodeTypeFull    = "full"
+	EpisodeTypeTrailer = "trailer"
+	EpisodeTypeBonus   = "bonus"
 
 	// ExplicitNo    = "no"
 	// ExplicitYes   = "yes"
@@ -11,11 +15,20 @@ const (
 	ExplicitTrue  = "true"
 )
 
-// Type ..
-func TypeValues() []string {
+// PodcastTypeValues ..
+func PodcastTypeValues() []string {
 	return []string{
-		TypeEpisodic,
-		TypeSerial,
+		PodcastTypeEpisodic,
+		PodcastTypeSerial,
+	}
+}
+
+// EpisodeTypesValues ..
+func EpisodeTypesValues() []string {
+	return []string{
+		EpisodeTypeFull,
+		EpisodeTypeTrailer,
+		EpisodeTypeBonus,
 	}
 }
 

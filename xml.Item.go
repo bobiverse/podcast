@@ -140,6 +140,10 @@ func (item *Item) Fix() {
 		item.Explicit = ExplicitFalse
 	}
 
+	if item.EpisodeType == "" {
+		item.EpisodeType = EpisodeTypeFull
+	}
+
 	// Try detect duration automatically
 	if item.Duration == 0 {
 		var buf []byte
@@ -233,6 +237,10 @@ func (item *Item) Validate() error {
 
 	if !inSlice(item.Explicit, ExplicitValues()) {
 		return fmt.Errorf("Item[%s] Explicit must be one of the %v", item.Key, ExplicitValues())
+	}
+
+	if !inSlice(item.EpisodeType, EpisodeTypesValues()) {
+		return fmt.Errorf("Item[%s] EpisodeType must be one of the %v", item.Key, EpisodeTypesValues())
 	}
 
 	if item.Enclosure.IsEmpty() {
