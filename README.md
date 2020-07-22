@@ -158,3 +158,9 @@ generates XML
       </channel>
   </rss>
 ```
+
+
+## TODO:
+- tests
+- keep clean XML (?) remove tags with default values already
+- calculate audio file duration by sample rate and sample count
