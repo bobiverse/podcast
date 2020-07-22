@@ -1,7 +1,14 @@
 # podcast
-Generate valid XML from given YAML config file.
+Generate valid XML from given YAML file with minimum details.
 
 ## Validates against
+- https://castfeedvalidator.com/
+- https://podba.se/validate/
+
+## Accepted by
+- Apple Itunes
+- Google podcasts
+- Spotify
 
 ## Example
 ```yaml
