@@ -29,6 +29,34 @@ ItunesImage   *AttrHref `xml:"itunes:image,omitempty" yaml:"Image"`
 ```
 
 ## Example
+```go
+package main
+
+import (
+	"log"
+
+	"github.com/briiC/podcast"
+)
+
+func main() {
+	Podcast, err := podcast.New("./podcast.yml")
+	if err != nil {
+		log.Printf("ERROR: %s", err)
+	}
+
+	if err := Podcast.SaveToFile(); err != nil {
+		log.Printf("ERROR: %s", err)
+	}
+
+	// List episodes in your code or send to HTML template
+	for _, ep := range Podcast.Episodes() {
+		log.Printf(">> %s", ep.Title)
+	}
+}
+
+```
+and
+
 ```yaml
 Title: Podcast example
 Domain: https://exampple.xx
