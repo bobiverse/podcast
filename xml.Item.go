@@ -41,9 +41,10 @@ type Item struct {
 	EpisodeType string     `xml:"itunes:episodeType,omitempty" yaml:"EpisodeType"`
 	Explicit    string     `xml:"itunes:explicit,omitempty" yaml:"Explicit"`
 
-	ItunesTitle   string `xml:"itunes:title,omitempty" yaml:"ItunesTitle"`
-	ItunesSummary *CDATA `xml:"itunes:summary,omitempty" yaml:"ItunesSummary"`
-	ItunesAuthor  string `xml:"itunes:author,omitempty" yaml:"Author"`
+	ItunesTitle   string    `xml:"itunes:title,omitempty" yaml:"ItunesTitle"`
+	ItunesSummary *CDATA    `xml:"itunes:summary,omitempty" yaml:"ItunesSummary"`
+	ItunesAuthor  string    `xml:"itunes:author,omitempty" yaml:"Author"`
+	ItunesImage   *AttrHref `xml:"itunes:image,omitempty" yaml:"Image"`
 
 	// Different duration formats are accepted however it is recommended to convert the length of the episode into seconds.
 	Duration Duration `xml:"itunes:duration,omitempty" yaml:"Duration"`
@@ -132,8 +133,7 @@ func (item *Item) Fix() {
 	}
 
 	if item.FileURL == "" {
-		item.FileURL = item.Channel.Domain + "/" + item.File
-
+		item.FileURL = pathToURL(item.Channel.Domain, item.File)
 	}
 
 	if item.Explicit == "" {
@@ -142,6 +142,12 @@ func (item *Item) Fix() {
 
 	if item.EpisodeType == "" {
 		item.EpisodeType = EpisodeTypeFull
+	}
+
+	if item.ItunesImage.IsEmpty() {
+		item.ItunesImage = item.Channel.ItunesImage
+	} else if !isValidURL(item.ItunesImage.Href) {
+		item.ItunesImage.Href = pathToURL(item.Channel.Domain, item.ItunesImage.Href)
 	}
 
 	// Try detect duration automatically
@@ -223,9 +229,9 @@ func (item *Item) Validate() error {
 		return fmt.Errorf("Item[%s] Description required", item.Key)
 	}
 
-	if item.Summary.IsEmpty() {
-		return fmt.Errorf("Item[%s] Summary required", item.Key)
-	}
+	// if item.Summary.IsEmpty() {
+	// 	return fmt.Errorf("Item[%s] Summary required", item.Key)
+	// }
 
 	if item.Season > 0 && item.Episode == 0 {
 		return fmt.Errorf("Item[%s] must have Episode if Season assigned", item.Key)
@@ -253,6 +259,10 @@ func (item *Item) Validate() error {
 
 	if item.Duration == 0 {
 		return fmt.Errorf("Item[%s] Episode `Duration` required. Add it manualy or install `ffprobe`, `fmpeg` or `exiftool` to get duration automatically", item.Key)
+	}
+
+	if item.ItunesImage != nil && !isValidURL(item.ItunesImage.Href) {
+		return fmt.Errorf("Item[%s] Episode `Image` must be valid URL", item.Key)
 	}
 
 	return nil

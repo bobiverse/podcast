@@ -53,3 +53,12 @@ func runBash(name string, args ...string) ([]byte, []byte, error) {
 	output, err := cmd.Output()
 	return output, bufErrOutput.Bytes(), err
 }
+
+// local path to URL
+func pathToURL(base, path string) string {
+	s := strings.Trim(base, "./") + "/" + strings.Trim(path, "./")
+	if isValidURL(s) {
+		return s
+	}
+	return ""
+}

@@ -67,7 +67,7 @@ func (podcast *Podcast) Load() error {
 
 	// podcast.Feed.Channel.Title = podcast.Title
 
-	color.Magenta("%+v", podcast.Feed.Channel)
+	// color.Magenta("%+v", podcast.Feed.Channel)
 	return nil
 }
 

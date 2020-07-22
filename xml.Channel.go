@@ -43,6 +43,7 @@ type Channel struct {
 // Fix channel
 func (channel *Channel) Fix() {
 
+	// Try to get `Domain` from `Link`
 	if channel.Domain == "" && channel.Link != "" {
 		u, err := url.Parse(channel.Link)
 		if err == nil {
@@ -50,11 +51,28 @@ func (channel *Channel) Fix() {
 		}
 	}
 
-	if channel.Link == "" && channel.Domain != "" {
-		u, err := url.Parse(channel.Link)
+	// Fix `Domain` if not valid URL
+	// `example.org/` ==> `https://example.org` (yes, using SSL)
+	if channel.Domain != "" && !isValidURL(channel.Domain) {
+		s := "https://" + channel.Domain
+		u, err := url.Parse(s)
 		if err == nil {
 			channel.Domain = u.Scheme + "://" + u.Hostname()
 		}
+	}
+
+	// Try to get `Link` from `Domain`
+	if channel.Link == "" && channel.Domain != "" {
+		u, err := url.Parse(channel.Domain)
+		if err == nil {
+			channel.Link = u.Scheme + "://" + u.Hostname()
+		}
+	}
+
+	// Fix `Link` if not valid URL
+	// `./my-link` ==> `https://example.org/my-link`
+	if channel.Link != "" && !isValidURL(channel.Link) {
+		channel.Link = pathToURL(channel.Domain, channel.Link)
 	}
 
 	// auto add last build time
@@ -80,6 +98,10 @@ func (channel *Channel) Fix() {
 	if channel.Image != nil && channel.Image.URL != "" {
 		channel.Image.Title = channel.Title
 		channel.Image.Link = channel.Link
+
+		if !isValidURL(channel.Image.URL) {
+			channel.Image.URL = pathToURL(channel.Domain, channel.Image.URL)
+		}
 	}
 
 	// Copy generic fields to itunes
