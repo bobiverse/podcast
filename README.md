@@ -81,11 +81,12 @@ Items:
     S01E02:
         Title: John Wick - Chapter 3 - Parabellum
         Description: Reviewing movie "John Wick - Chapter 3 - Parabellum" (7.5/10)
-        File: ./episodes/S01E02.m4a
+        File: ./episodes/S01E02.mp3
         PubDate: 2020-07-14
     S01E01:
         Title: Apocalypse - The Second World War
         File: ./episodes/S01E01.mp3
+        FileURL: https://exampple.xx/different/path/to/public/file/S01E01.mp3
         PubDate: 2020-07-07
         Description: Reviewing movie "Apocalypse - The Second World War" (9/10)
         Image: ./images/custom-episode-image.jpeg
@@ -120,34 +121,34 @@ generates XML
               <itunes:category text="TV Reviews"></itunes:category>
           </itunes:category>
           <itunes:image href="https://exampple.xx/podcast.png"></itunes:image>
-          <lastBuildDate>Wed, 22 Jul 2020 23:29:13 EEST</lastBuildDate>
+          <lastBuildDate>Thu, 23 Jul 2020 00:08:47 EEST</lastBuildDate>
           <copyright>℗ &amp; © John</copyright>
-          <item>
-              <title>John Wick - Chapter 3 - Parabellum</title>
-              <description><![CDATA[Reviewing movie "John Wick - Chapter 3 - Parabellum" (7.5/10)]]></description>
-              <content:encoded><![CDATA[<p>Reviewing movie "John Wick - Chapter 3 - Parabellum" (7.5/10)</p>]]></content:encoded>
-              <enclosure url="https://exampple.xx/episodes/S01E03.mp3" length="78287932" type="audio/mpeg"></enclosure>
-              <link>https://exampple.xx/episodes/S01E03.mp3</link>
-              <guid isPermaLink="true">https://exampple.xx/episodes/S01E03.mp3</guid>
-              <pubDate>Tue, 14 Jul 2020 00:00:00 UTC</pubDate>
-              <itunes:season>1</itunes:season>
-              <itunes:episode>2</itunes:episode>
-              <itunes:episodeType>full</itunes:episodeType>
-              <itunes:explicit>false</itunes:explicit>
-              <itunes:author>Neo and Trinity</itunes:author>
-              <itunes:image href="https://exampple.xx/podcast.png"></itunes:image>
-              <itunes:duration>3261</itunes:duration>
-          </item>
           <item>
               <title>Apocalypse - The Second World War</title>
               <description><![CDATA[Reviewing movie "Apocalypse - The Second World War" (9/10)]]></description>
               <content:encoded><![CDATA[<p>Reviewing movie "Apocalypse - The Second World War" (9/10)</p>]]></content:encoded>
-              <enclosure url="https://exampple.xx/episodes/S01E02.mp3" length="78107374" type="audio/mpeg"></enclosure>
-              <link>https://exampple.xx/episodes/S01E02.mp3</link>
-              <guid isPermaLink="true">https://exampple.xx/episodes/S01E02.mp3</guid>
+              <enclosure url="https://exampple.xx/different/path/to/public/file/S01E01.mp3" length="72552696" type="audio/mpeg"></enclosure>
+              <link>https://exampple.xx/different/path/to/public/file/S01E01.mp3</link>
+              <guid isPermaLink="true">https://exampple.xx/different/path/to/public/file/S01E01.mp3</guid>
               <pubDate>Tue, 07 Jul 2020 00:00:00 UTC</pubDate>
               <itunes:season>1</itunes:season>
               <itunes:episode>1</itunes:episode>
+              <itunes:episodeType>full</itunes:episodeType>
+              <itunes:explicit>false</itunes:explicit>
+              <itunes:author>Neo and Trinity</itunes:author>
+              <itunes:image href="https://exampple.xx/images/custom-episode-image.jpeg"></itunes:image>
+              <itunes:duration>3022</itunes:duration>
+          </item>
+          <item>
+              <title>John Wick - Chapter 3 - Parabellum</title>
+              <description><![CDATA[Reviewing movie "John Wick - Chapter 3 - Parabellum" (7.5/10)]]></description>
+              <content:encoded><![CDATA[<p>Reviewing movie "John Wick - Chapter 3 - Parabellum" (7.5/10)</p>]]></content:encoded>
+              <enclosure url="https://exampple.xx/episodes/S01E02.mp3" length="78107374" type="audio/mpeg"></enclosure>
+              <link>https://exampple.xx/episodes/S01E02.mp3</link>
+              <guid isPermaLink="true">https://exampple.xx/episodes/S01E02.mp3</guid>
+              <pubDate>Tue, 14 Jul 2020 00:00:00 UTC</pubDate>
+              <itunes:season>1</itunes:season>
+              <itunes:episode>2</itunes:episode>
               <itunes:episodeType>full</itunes:episodeType>
               <itunes:explicit>false</itunes:explicit>
               <itunes:author>Neo and Trinity</itunes:author>
@@ -156,5 +157,4 @@ generates XML
           </item>
       </channel>
   </rss>
-
 ```
