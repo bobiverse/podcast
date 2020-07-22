@@ -2,6 +2,7 @@ package podcast
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 	"strings"
 	"time"
@@ -11,13 +12,13 @@ import (
 type Channel struct {
 	Domain string `xml:"-" yaml:"Domain"`
 
+	SelfLink *AttrHref `xml:"atom:link,omitempty" yaml:"SelfLink"`
+
 	// Text          string    `xml:",chardata" yaml:"-"`
 	Link           string `xml:"link,omitempty" yaml:"Link"`
 	Title          string `xml:"title" yaml:"Title"`
 	Subtitle       string `xml:"subtitle,omitempty" yaml:"Subtitle"`
-	Summary        *CDATA `xml:"summary,omitempty" yaml:"Summary"`
 	Language       string `xml:"language,omitempty" yaml:"Language"`
-	Author         string `xml:"author,omitempty" yaml:"Author"`
 	Description    *CDATA `xml:"description,omitempty" yaml:"Description"`
 	ContentEncoded *CDATA `xml:"content:encoded,omitempty" yaml:"ContentEncoded"`
 	Image          *Image `xml:"image,omitempty" yaml:"Image"`
@@ -25,9 +26,9 @@ type Channel struct {
 	// Docs about itunes https://help.apple.com/itc/podcasts_connect/#/itcb54353390
 	ItunesTitle    string    `xml:"itunes:title,omitempty" yaml:"ItunesTitle"`
 	ItunesSubtitle string    `xml:"itunes:subtitle,omitempty" yaml:"ItunesSubtitle"`
-	ItunesAuthor   string    `xml:"itunes:author,omitempty" yaml:"ItunesAuthor"`
+	ItunesAuthor   string    `xml:"itunes:author,omitempty" yaml:"Author"`
 	ItunesOwner    *Owner    `xml:"itunes:owner,omitempty" yaml:"Owner"`
-	ItunesSummary  *CDATA    `xml:"itunes:summary,omitempty" yaml:"ItunesSummary"`
+	ItunesSummary  *CDATA    `xml:"itunes:summary,omitempty" yaml:"Summary"`
 	ItunesType     string    `xml:"itunes:type,omitempty" yaml:"Type"`
 	ItunesExplicit string    `xml:"itunes:explicit,omitempty" yaml:"Explicit"`
 	ItunesKeywords string    `xml:"itunes:keywords,omitempty" yaml:"Keywords"`
@@ -111,12 +112,6 @@ func (channel *Channel) Fix() {
 	if channel.ItunesSubtitle == "" {
 		channel.ItunesSubtitle = channel.Subtitle
 	}
-	if channel.ItunesAuthor == "" {
-		channel.ItunesAuthor = channel.Author
-	}
-	if channel.ItunesSummary.IsEmpty() {
-		channel.ItunesSummary = channel.Summary
-	}
 	if channel.ItunesType == "" {
 		channel.ItunesType = PodcastTypeEpisodic
 	}
@@ -124,7 +119,13 @@ func (channel *Channel) Fix() {
 		channel.ItunesExplicit = ExplicitFalse
 	}
 	if channel.ItunesImage.IsEmpty() && !channel.Image.IsEmpty() {
-		channel.ItunesImage = &AttrHref{channel.Image.URL}
+		channel.ItunesImage = &AttrHref{Href: channel.Image.URL}
+	}
+
+	if !channel.SelfLink.IsEmpty() && !isValidURL(channel.SelfLink.Href) {
+		channel.SelfLink.Href = pathToURL(channel.Domain, channel.SelfLink.Href)
+		channel.SelfLink.Rel = "self"
+		channel.SelfLink.Type = "application/rss+xml"
 	}
 
 	// Fix items
@@ -142,7 +143,7 @@ func (channel *Channel) Validate() error {
 		return fmt.Errorf("Empty Channel Title")
 	}
 
-	if channel.Author == "" {
+	if channel.ItunesAuthor == "" {
 		return fmt.Errorf("Empty Channel Author")
 	}
 
@@ -162,7 +163,7 @@ func (channel *Channel) Validate() error {
 		return fmt.Errorf("Empty Channel Link")
 	}
 
-	if channel.Summary.IsEmpty() {
+	if channel.ItunesSummary.IsEmpty() {
 		return fmt.Errorf("Empty Channel Summary")
 	}
 
@@ -199,6 +200,10 @@ func (channel *Channel) Validate() error {
 	if !strings.Contains(channel.ItunesOwner.Email, "@") {
 		return fmt.Errorf("Invalid Owner email field. Add Owner data in format `My Name, my@email.xx`")
 
+	}
+
+	if channel.SelfLink.IsEmpty() {
+		log.Printf("Warning: It's recommended to add this RSS feed URL in `SelfLink` param ")
 	}
 
 	if channel.Items.Len() == 0 {

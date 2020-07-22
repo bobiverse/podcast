@@ -46,7 +46,7 @@ func New(configPath, contentPath, contentURL string) (*Podcast, error) {
 	return podcast, nil
 }
 
-// LoadFromPath ..
+// Load ..
 func (podcast *Podcast) Load() error {
 
 	// check if podcast YAML file exists

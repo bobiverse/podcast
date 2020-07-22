@@ -22,9 +22,6 @@ type Item struct {
 	// A single, descriptive sentence for your podcast or episode in <itunes:subtitle>.
 	Subtitle string `xml:"itunes:subtitle,omitempty" yaml:"Subtitle"`
 
-	// One or more sentences summarizing your podcast or episode in <itunes:summary>.
-	Summary *CDATA `xml:"summary,omitempty" yaml:"Summary"`
-
 	// One or more sentences, or a paragraph, describing your podcast or episode in <description>.
 	// Apple recommends the text in <description> be the same as the text in <content:encoded>, but in plain text form.
 	Description *CDATA `xml:"description,omitempty" yaml:"Description"`
@@ -33,6 +30,7 @@ type Item struct {
 	ContentEncoded *CDATA `xml:"content:encoded,omitempty" yaml:"Encoded"`
 
 	Enclosure   *Enclosure `xml:"enclosure,omitempty" yaml:"Enclosure"`
+	Link        string     `xml:"link,omitempty" yaml:"Link"`
 	GUID        *GUID      `xml:"guid,omitempty" yaml:"GUID"`
 	PubDate     *Date      `xml:"pubDate,omitempty" yaml:"PubDate"`
 	Keywords    string     `xml:"itunes:keywords,omitempty" yaml:"Keywords"`
@@ -41,8 +39,8 @@ type Item struct {
 	EpisodeType string     `xml:"itunes:episodeType,omitempty" yaml:"EpisodeType"`
 	Explicit    string     `xml:"itunes:explicit,omitempty" yaml:"Explicit"`
 
-	ItunesTitle   string    `xml:"itunes:title,omitempty" yaml:"ItunesTitle"`
-	ItunesSummary *CDATA    `xml:"itunes:summary,omitempty" yaml:"ItunesSummary"`
+	// One or more sentences summarizing your podcast or episode in <itunes:summary>.
+	ItunesSummary *CDATA    `xml:"itunes:summary,omitempty" yaml:"Summary"`
 	ItunesAuthor  string    `xml:"itunes:author,omitempty" yaml:"Author"`
 	ItunesImage   *AttrHref `xml:"itunes:image,omitempty" yaml:"Image"`
 
@@ -95,13 +93,6 @@ func (item *Item) ExtractKeyInfo() {
 func (item *Item) Fix() {
 	log.Printf("Item[%s] Fix()...", item.Key)
 
-	if item.ItunesTitle == "" {
-		item.ItunesTitle = item.Title
-	}
-
-	if item.ItunesSummary.IsEmpty() {
-		item.ItunesSummary = item.Summary
-	}
 	if item.ContentEncoded.IsEmpty() && !item.Description.IsEmpty() && item.Description != item.ContentEncoded {
 		item.ContentEncoded = item.Description
 	}
@@ -200,6 +191,10 @@ func (item *Item) Fix() {
 		}
 	}
 
+	if item.Link == "" {
+		item.Link = item.Enclosure.URL
+	}
+
 }
 
 // Validate channel
@@ -227,6 +222,14 @@ func (item *Item) Validate() error {
 
 	if item.Description.IsEmpty() {
 		return fmt.Errorf("Item[%s] Description required", item.Key)
+	}
+
+	if item.Link == "" {
+		return fmt.Errorf("Item[%s] `Link` required", item.Key)
+	}
+
+	if item.GUID.IsEmpty() {
+		return fmt.Errorf("Item[%s] `GUID` required", item.Key)
 	}
 
 	// if item.Summary.IsEmpty() {
