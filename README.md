@@ -10,6 +10,24 @@ Generate valid XML from given YAML file with minimum details.
 - Google podcasts
 - Spotify
 
+## Auto-populated fields
+Large amount of fields are pre-filled or auto-populated. If you see bug or you need different value in this field you can overwrite it in your YAML file.
+
+For example if you want to change default value of `<itunes:explicit>false</itunes:explicit>` use _CamelCased_ field name in your YAML file as:
+```yaml
+Explicit: true
+```
+
+To see what are YAML field names for XML tags see code  `podcast/xml.Item.go` and `podcast/xml.Channel.go`.
+
+---
+```go
+// variable: `ItunesImage`
+// YAML: `Image:`
+// XML: `<itunes:image>`
+ItunesImage   *AttrHref `xml:"itunes:image,omitempty" yaml:"Image"`
+```
+
 ## Example
 ```yaml
 Title: Podcast example
