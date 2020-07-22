@@ -10,6 +10,6 @@ require (
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/mccoyst/vorbis v0.0.0-20190330175025-e010be36d630 // indirect
 	github.com/zhulik/go_mediainfo v0.0.0-20151224204459-29d57b2a6ea0 // indirect
-	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
+	golang.org/x/sys v0.0.0-20200722175500-76b94024e4b6 // indirect
 	gopkg.in/yaml.v2 v2.3.0
 )
