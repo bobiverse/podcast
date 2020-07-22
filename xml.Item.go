@@ -17,10 +17,21 @@ type Item struct {
 	Key     string   `xml:"-" yaml:"-"`
 
 	// Text        string     `xml:",chardata"`
-	Title       string     `xml:"title,omitempty" yaml:"Title"`
-	Description *CDATA     `xml:"description,omitempty" yaml:"Description"`
-	Encoded     *CDATA     `xml:"content:encoded,omitempty" yaml:"Encoded"`
-	Summary     *CDATA     `xml:"summary,omitempty" yaml:"Summary"`
+	Title string `xml:"title,omitempty" yaml:"Title"`
+
+	// A single, descriptive sentence for your podcast or episode in <itunes:subtitle>.
+	Subtitle string `xml:"itunes:subtitle,omitempty" yaml:"Subtitle"`
+
+	// One or more sentences summarizing your podcast or episode in <itunes:summary>.
+	Summary *CDATA `xml:"summary,omitempty" yaml:"Summary"`
+
+	// One or more sentences, or a paragraph, describing your podcast or episode in <description>.
+	// Apple recommends the text in <description> be the same as the text in <content:encoded>, but in plain text form.
+	Description *CDATA `xml:"description,omitempty" yaml:"Description"`
+
+	// Apple recommends the text in <content:encoded> be the same as the text in <description>, but in HTML.
+	ContentEncoded *CDATA `xml:"content:encoded,omitempty" yaml:"Encoded"`
+
 	Enclosure   *Enclosure `xml:"enclosure,omitempty" yaml:"Enclosure"`
 	GUID        *GUID      `xml:"guid,omitempty" yaml:"GUID"`
 	PubDate     *Date      `xml:"pubDate,omitempty" yaml:"PubDate"`
@@ -89,6 +100,13 @@ func (item *Item) Fix() {
 
 	if item.ItunesSummary.IsEmpty() {
 		item.ItunesSummary = item.Summary
+	}
+	if item.ContentEncoded.IsEmpty() && !item.Description.IsEmpty() && item.Description != item.ContentEncoded {
+		item.ContentEncoded = item.Description
+	}
+
+	if item.ContentEncoded == item.Description {
+		item.ContentEncoded = &CDATA{Text: "<p>" + item.Description.String() + "</p>"}
 	}
 
 	if item.File != "" {
