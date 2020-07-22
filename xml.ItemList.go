@@ -2,7 +2,6 @@ package podcast
 
 import (
 	"fmt"
-	"log"
 	"sort"
 )
 
@@ -32,6 +31,9 @@ func (items *ItemList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	// populate `items`
 	for key, item := range mItems {
+		if item == nil {
+			continue
+		}
 		item.Key = key
 		item.ExtractKeyInfo()
 
@@ -46,7 +48,7 @@ func (items *ItemList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // Fix ..
 func (items ItemList) Fix(channel *Channel) {
-	log.Printf("ItemList Fix()...")
+	// log.Printf("ItemList Fix()...")
 
 	for _, item := range items {
 		item.Channel = channel
@@ -56,7 +58,7 @@ func (items ItemList) Fix(channel *Channel) {
 
 // Validate channel
 func (items ItemList) Validate() error {
-	log.Printf("ItemList Validate()...")
+	// log.Printf("ItemList Validate()...")
 
 	// collect all guids and check if there is no duplicates
 	var guids []string

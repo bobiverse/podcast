@@ -2,7 +2,6 @@ package podcast
 
 import (
 	"bytes"
-	"log"
 	"net/url"
 	"os/exec"
 	"strings"
@@ -44,7 +43,7 @@ func isValidURL(URL string) bool {
 
 // Execute bash script
 func runBash(name string, args ...string) ([]byte, []byte, error) {
-	log.Printf("⍄  %s %s", name, strings.Join(args, " "))
+	// log.Printf("⍄  %s %s", name, strings.Join(args, " "))
 
 	cmd := exec.Command(name, args...)
 	bufErrOutput := &bytes.Buffer{}

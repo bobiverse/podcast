@@ -91,7 +91,7 @@ func (item *Item) ExtractKeyInfo() {
 
 // Fix ..
 func (item *Item) Fix() {
-	log.Printf("Item[%s] Fix()...", item.Key)
+	// log.Printf("Item[%s] Fix()...", item.Key)
 
 	if item.ContentEncoded.IsEmpty() && !item.Description.IsEmpty() && item.Description != item.ContentEncoded {
 		item.ContentEncoded = item.Description
@@ -142,7 +142,7 @@ func (item *Item) Fix() {
 	}
 
 	// Try detect duration automatically
-	if item.Duration == 0 {
+	if item.Duration == 0 && item.File != "" {
 		var buf []byte
 		var re *regexp.Regexp
 		var matches [][]byte
@@ -199,7 +199,7 @@ func (item *Item) Fix() {
 
 // Validate channel
 func (item *Item) Validate() error {
-	log.Printf("Item[%s] Validate()...", item.Key)
+	// log.Printf("Item[%s] Validate()...", item.Key)
 
 	if item.File == "" {
 		return fmt.Errorf("Item[%s] File path to audio file required", item.Key)

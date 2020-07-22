@@ -2,7 +2,6 @@ package podcast
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
 
 	"github.com/fatih/color"
@@ -12,8 +11,6 @@ import (
 // Podcast ..
 type Podcast struct {
 	configFilepath string `yaml:"-"`
-	contentPath    string `yaml:"-"`
-	contentURL     string `yaml:"-"`
 
 	Title string `yaml:"Title"`
 
@@ -21,13 +18,9 @@ type Podcast struct {
 }
 
 // New ..
-func New(configPath, contentPath, contentURL string) (*Podcast, error) {
-	log.Println("[podcast] New ")
-
+func New(configPath string) (*Podcast, error) {
 	podcast := &Podcast{
 		configFilepath: configPath,
-		contentPath:    contentPath,
-		contentURL:     contentURL,
 
 		Feed: &XMLRoot{
 			Itunes:  "http://www.itunes.com/dtds/podcast-1.0.dtd",
@@ -44,6 +37,11 @@ func New(configPath, contentPath, contentURL string) (*Podcast, error) {
 	}
 
 	return podcast, nil
+}
+
+// Episodes - quickly get items
+func (podcast *Podcast) Episodes() ItemList {
+	return podcast.Feed.Channel.Items
 }
 
 // Load ..
@@ -73,13 +71,13 @@ func (podcast *Podcast) Load() error {
 
 // Fix misconfigs and populate empty values with defaults  before saving ..
 func (podcast *Podcast) Fix() {
-	log.Println("[podcast] Fix ")
+	// log.Println("[podcast] Fix ")
 	podcast.Feed.Channel.Fix()
 }
 
 // Validate before saving ..
 func (podcast *Podcast) Validate() error {
-	log.Println("[podcast] Validate ")
+	// log.Println("[podcast] Validate ")
 
 	if err := podcast.Feed.Channel.Validate(); err != nil {
 		return err
@@ -99,7 +97,7 @@ func (podcast *Podcast) SaveToFile() error {
 	}
 
 	// generate XML and save to file
-	log.Println("[podcast] SaveToFile ")
+	// log.Println("[podcast] SaveToFile ")
 
 	buf, err := podcast.Feed.ToXML("")
 	if err != nil {
