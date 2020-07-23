@@ -3,6 +3,7 @@ package podcast
 import (
 	"io/ioutil"
 	"os"
+	"time"
 
 	"gopkg.in/yaml.v2"
 )
@@ -22,12 +23,13 @@ func New(configPath string) (*Podcast, error) {
 		configFilepath: configPath,
 
 		Feed: &XMLRoot{
-			Itunes:    "http://www.itunes.com/dtds/podcast-1.0.dtd",
-			Content:   "http://purl.org/rss/1.0/modules/content/",
-			Atom:      "http://www.w3.org/2005/Atom",
-			Version:   "2.0",
-			Channel:   &Channel{},
-			Generator: "https://github.com/briiC/podcast",
+			Itunes:        "http://www.itunes.com/dtds/podcast-1.0.dtd",
+			Content:       "http://purl.org/rss/1.0/modules/content/",
+			Atom:          "http://www.w3.org/2005/Atom",
+			Version:       "2.0",
+			Channel:       &Channel{},
+			Generator:     "https://github.com/briiC/podcast",
+			LastBuildDate: Date{time.Now()},
 		},
 	}
 
