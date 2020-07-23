@@ -9,13 +9,14 @@ const XMLFilePrefix = `<?xml version="1.0" encoding="UTF-8"?>`
 
 // XMLRoot - rss feed base
 type XMLRoot struct {
-	XMLName xml.Name `xml:"rss"`
-	Text    string   `xml:",chardata"`
-	Itunes  string   `xml:"xmlns:itunes,attr,omitempty"`
-	Content string   `xml:"xmlns:content,attr,omitempty"`
-	Atom    string   `xml:"xmlns:atom,attr,omitempty"`
-	Version string   `xml:"version,attr,omitempty"`
-	Channel *Channel `xml:"channel"`
+	XMLName   xml.Name `xml:"rss"`
+	Text      string   `xml:",chardata"`
+	Itunes    string   `xml:"xmlns:itunes,attr,omitempty"`
+	Content   string   `xml:"xmlns:content,attr,omitempty"`
+	Atom      string   `xml:"xmlns:atom,attr,omitempty"`
+	Version   string   `xml:"version,attr,omitempty"`
+	Generator string   `xml:"generator" yaml:"-"`
+	Channel   *Channel `xml:"channel"`
 }
 
 // ToXML ..
