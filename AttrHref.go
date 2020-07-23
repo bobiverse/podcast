@@ -17,3 +17,8 @@ func (href *AttrHref) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	unmarshal(&href.Href)
 	return nil
 }
+
+// String return URL or Href
+func (href *AttrHref) String() string {
+	return href.Href
+}

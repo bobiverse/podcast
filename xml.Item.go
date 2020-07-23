@@ -126,6 +126,9 @@ func (item *Item) Fix() {
 	if item.FileURL == "" {
 		item.FileURL = pathToURL(item.Channel.Domain, item.File)
 	}
+	if item.FileURL != "" && !isValidURL(item.FileURL) {
+		item.FileURL = pathToURL(item.Channel.Domain, item.FileURL)
+	}
 
 	if item.Explicit == "" {
 		item.Explicit = ExplicitFalse

@@ -19,3 +19,14 @@ func (image *Image) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	unmarshal(&image.URL)
 	return nil
 }
+
+// String return URL or Href
+func (image *Image) String() string {
+	if image.URL != "" {
+		return image.URL
+	}
+	if image.Href != "" {
+		return image.Href
+	}
+	return image.Link
+}
