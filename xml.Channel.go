@@ -17,7 +17,7 @@ type Channel struct {
 	// Text          string    `xml:",chardata" yaml:"-"`
 	Link           string `xml:"link,omitempty" yaml:"Link"`
 	Title          string `xml:"title" yaml:"Title"`
-	Subtitle       string `xml:"subtitle,omitempty" yaml:"Subtitle"`
+	Subtitle       string `xml:"itunes:subtitle,omitempty" yaml:"Subtitle"`
 	Language       string `xml:"language,omitempty" yaml:"Language"`
 	Description    *CDATA `xml:"description,omitempty" yaml:"Description"`
 	ContentEncoded *CDATA `xml:"content:encoded,omitempty" yaml:"ContentEncoded"`
