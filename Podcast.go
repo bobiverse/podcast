@@ -4,7 +4,6 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/fatih/color"
 	"gopkg.in/yaml.v2"
 )
 
@@ -43,6 +42,11 @@ func New(configPath string) (*Podcast, error) {
 // Episodes - quickly get items
 func (podcast *Podcast) Episodes() ItemList {
 	return podcast.Feed.Channel.Items
+}
+
+// ToXML - generate XML for podcast
+func (podcast *Podcast) XML() ([]byte, error) {
+	return podcast.Feed.ToXML("")
 }
 
 // Load ..
@@ -88,7 +92,7 @@ func (podcast *Podcast) Validate() error {
 }
 
 // SaveToFile ..
-func (podcast *Podcast) SaveToFile() error {
+func (podcast *Podcast) SaveToFile(fpath string) error {
 	// fix some values
 	podcast.Fix()
 
@@ -98,13 +102,11 @@ func (podcast *Podcast) SaveToFile() error {
 	}
 
 	// generate XML and save to file
-	// log.Println("[podcast] SaveToFile ")
-
 	buf, err := podcast.Feed.ToXML("")
 	if err != nil {
 		return err
 	}
 
-	color.Yellow("%s", buf)
-	return nil
+	// save to file
+	return ioutil.WriteFile(fpath, buf, 0640)
 }

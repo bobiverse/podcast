@@ -1,5 +1,5 @@
 # podcast
-Generate valid XML from given YAML file with minimum details.
+Generate valid podcast _XML_ from given _YAML_ file with minimum details.
 
 ## Validates against
 - https://castfeedvalidator.com/
@@ -11,9 +11,9 @@ Generate valid XML from given YAML file with minimum details.
 - Spotify
 
 ## Auto-populated fields
-Large amount of fields are pre-filled or auto-populated. If you see bug or you need different value in this field you can overwrite it in your YAML file.
+Large amount of fields are pre-filled or auto-populated. If you see bug or you need different value in this field you can overwrite it in your _YAML_ file.
 
-For example if you want to change default value of `<itunes:explicit>false</itunes:explicit>` use _CamelCased_ field name in your YAML file as:
+For example if you want to change default value of `<itunes:explicit>false</itunes:explicit>` use _CamelCased_ field name in your _YAML_ file as:
 ```yaml
 Explicit: true
 ```
@@ -39,12 +39,18 @@ import (
 )
 
 func main() {
+	// Load YML file required to generate XML
 	Podcast, err := podcast.New("./podcast.yml")
 	if err != nil {
 		log.Printf("ERROR: %s", err)
 	}
 
-	if err := Podcast.SaveToFile(); err != nil {
+	// Get XML to output
+	buf, _ := Podcast.XML()
+	log.Printf("XML:\n%s", Podcast.XML())
+
+	// -- OR -- save XML to file
+	if err := Podcast.SaveToFile("feed.xml"); err != nil {
 		log.Printf("ERROR: %s", err)
 	}
 
@@ -92,7 +98,7 @@ Items:
         Image: ./images/custom-episode-image.jpeg
 
 ```
-generates XML
+generates _XML_
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -164,3 +170,4 @@ generates XML
 - tests
 - keep clean XML (?) remove tags with default values already
 - calculate audio file duration by sample rate and sample count
+- parse `PubDate` from different datetime formats
