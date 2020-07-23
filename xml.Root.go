@@ -12,6 +12,7 @@ type XMLRoot struct {
 	XMLName       xml.Name `xml:"rss"`
 	Text          string   `xml:",chardata"`
 	Itunes        string   `xml:"xmlns:itunes,attr,omitempty"`
+	Spotify       string   `xml:"xmlns:spotify,attr,omitempty"`
 	Content       string   `xml:"xmlns:content,attr,omitempty"`
 	Atom          string   `xml:"xmlns:atom,attr,omitempty"`
 	Version       string   `xml:"version,attr,omitempty"`

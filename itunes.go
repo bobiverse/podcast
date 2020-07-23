@@ -9,8 +9,8 @@ const (
 	EpisodeTypeTrailer = "trailer"
 	EpisodeTypeBonus   = "bonus"
 
-	// ExplicitNo    = "no"
-	// ExplicitYes   = "yes"
+	ExplicitNo    = "no"
+	ExplicitYes   = "yes"
 	ExplicitFalse = "false"
 	ExplicitTrue  = "true"
 )
@@ -35,8 +35,8 @@ func EpisodeTypesValues() []string {
 // ExplicitValues ..
 func ExplicitValues() []string {
 	return []string{
-		// ExplicitNo,
-		// ExplicitYes,
+		ExplicitNo,
+		ExplicitYes,
 		ExplicitFalse,
 		ExplicitTrue,
 	}

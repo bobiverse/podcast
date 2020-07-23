@@ -34,6 +34,8 @@ type Channel struct {
 	ItunesCategory *Category `xml:"itunes:category" yaml:"Category"`
 	ItunesImage    *AttrHref `xml:"itunes:image" yaml:"ItunesImage"`
 
+	Country string `xml:"spotify:countryOfOrigin" yaml:"Country"`
+
 	LastBuildDate *Date  `xml:"lastBuildDate,omitempty" yaml:"LastBuildDate"`
 	Copyright     string `xml:"copyright,omitempty" yaml:"Copyright"`
 
@@ -112,7 +114,7 @@ func (channel *Channel) Fix() {
 		channel.ItunesType = PodcastTypeEpisodic
 	}
 	if channel.ItunesExplicit == "" {
-		channel.ItunesExplicit = ExplicitFalse
+		channel.ItunesExplicit = ExplicitYes
 	}
 	if channel.ItunesImage.IsEmpty() && !channel.Image.IsEmpty() {
 		channel.ItunesImage = &AttrHref{Href: channel.Image.URL}

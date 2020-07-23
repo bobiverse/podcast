@@ -24,6 +24,7 @@ func New(configPath string) (*Podcast, error) {
 
 		Feed: &XMLRoot{
 			Itunes:        "http://www.itunes.com/dtds/podcast-1.0.dtd",
+			Spotify:       "https://www.spotify.com/ns/rss",
 			Content:       "http://purl.org/rss/1.0/modules/content/",
 			Atom:          "http://www.w3.org/2005/Atom",
 			Version:       "2.0",

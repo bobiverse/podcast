@@ -131,7 +131,7 @@ func (item *Item) Fix() {
 	}
 
 	if item.Explicit == "" {
-		item.Explicit = ExplicitFalse
+		item.Explicit = ExplicitYes
 	}
 
 	if item.EpisodeType == "" {
