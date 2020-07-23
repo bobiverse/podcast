@@ -25,7 +25,6 @@ type Channel struct {
 
 	// Docs about itunes https://help.apple.com/itc/podcasts_connect/#/itcb54353390
 	ItunesTitle    string    `xml:"itunes:title,omitempty" yaml:"ItunesTitle"`
-	ItunesSubtitle string    `xml:"itunes:subtitle,omitempty" yaml:"ItunesSubtitle"`
 	ItunesAuthor   string    `xml:"itunes:author,omitempty" yaml:"Author"`
 	ItunesOwner    *Owner    `xml:"itunes:owner,omitempty" yaml:"Owner"`
 	ItunesSummary  *CDATA    `xml:"itunes:summary,omitempty" yaml:"Summary"`
@@ -108,9 +107,6 @@ func (channel *Channel) Fix() {
 	// Copy generic fields to itunes
 	if channel.ItunesTitle == "" {
 		channel.ItunesTitle = channel.Title
-	}
-	if channel.ItunesSubtitle == "" {
-		channel.ItunesSubtitle = channel.Subtitle
 	}
 	if channel.ItunesType == "" {
 		channel.ItunesType = PodcastTypeEpisodic

@@ -37,12 +37,15 @@ func (items *ItemList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		item.Key = key
 		item.ExtractKeyInfo()
 
-		// log.Printf("------------[%s] %+v", key, item.Title)
 		*items = append(*items, item)
 	}
 
-	sort.Reverse(items)
-
+	sort.Sort(items)
+	//
+	// for _, item := range *items {
+	// 	item.Title += fmt.Sprintf("\t^%d", item.Weight())
+	// 	log.Printf("------------[%s] %d -- %+v", item.Key, item.Weight(), item.Title)
+	// }
 	return nil
 }
 
