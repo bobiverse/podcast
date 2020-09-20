@@ -79,7 +79,8 @@ func (item *Item) ExtractKeyInfo() {
 	}
 
 	// Episode
-	episode, err := strconv.Atoi(item.Key[5:6])
+
+	episode, err := strconv.Atoi(item.Key[4:6])
 	if err != nil {
 		log.Printf("Warning: Episode can't be extracted from Item [%s]", item.Key)
 
